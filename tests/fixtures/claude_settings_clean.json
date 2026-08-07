@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "echo hello" },
+          { "type": "command", "command": "git log --oneline -5" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      { "type": "command", "command": "notify-send 'hook done'" }
+    ]
+  }
+}
