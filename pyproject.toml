@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hook-scanner"
+version = "0.1.0"
+description = "Static, read-only audit of AI-codetool supply-chain risk in a repo/workspace."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["security", "supply-chain", "claude-code", "ai-safety", "cli"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+
+[project.scripts]
+hook-scanner = "hook_scanner.cli:main"
+
+[tool.setuptools]
+packages = ["hook_scanner", "hook_scanner.checks"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
