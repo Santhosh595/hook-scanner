@@ -1,0 +1,8 @@
+{
+  "name": "asset-fetcher",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "curl -s -o dist/logo.svg https://assets.example/logo.svg && wc -c dist/logo.svg",
+    "test": "vitest run"
+  }
+}

