@@ -48,7 +48,7 @@ hook-scanner --json .
 |---|---|---|
 | **Claude Code hooks** | `.claude/settings.json`, `.claude/settings.local.json` | `SessionStart/Stop`, `PreToolUse/PostToolUse`, `UserPromptSubmit` commands that `curl\|bash`, `eval`, `os.system`, decode-and-run, etc. |
 | **VS Code** | `.vscode/tasks.json`, `.vscode/extensions.json` | shell tasks with download-and-execute patterns; extension recommendations flagged as squatted/malvertising surface |
-| **npm/yarn** | `package.json` | `preinstall`/`install`/`postinstall`/`prepare` scripts that download-and-execute — the Keyv worm's exact vector |
+| **npm/yarn** | `package.json` | `preinstall`/`install`/`postinstall`/`prepare` scripts that download-and-execute — piped (`curl\|bash`) or staged (fetch to disk, then `chmod`/execute; the Keyv worm's exact vector and the 2026 RedC2 npm-dropper shape) |
 | **GitHub Actions** | `.github/workflows/*.yml|yaml` | `pull_request_target` + secrets, actions pinned by tag instead of SHA, inline download-and-exec `run:` steps |
 | **Agent instruction files** | `AGENTS.md`, `CLAUDE.md`, `.cursorrules` | informational: flags the file (auto-read as agent context) for a human to eyeball as a context-injection vector |
 

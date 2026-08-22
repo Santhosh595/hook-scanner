@@ -4,7 +4,9 @@ Everything here is heuristic: a match on a command string does not prove
 malice, it flags a pattern worth a human look. The patterns target the
 download-and-execute chains shown up by the Keyv / Claude-Code-hook class
 of supply-chain attacks (curl|bash, eval, os.system, base64 -> decode ->
-run, etc).
+run, etc). The staged_dropper pattern covers the fetch-to-disk variant
+(curl/wget -o ... && chmod +x ... && run) used by the 2026 trojanized-npm
+RedC2 droppers, which never pipe to a shell and so evade curl|bash rules.
 """
 
 from __future__ import annotations
@@ -57,6 +59,27 @@ _PATTERNS: list[tuple[str, re.Pattern[str], str]] = [
             re.IGNORECASE,
         ),
         "PowerShell download/encode pattern.",
+    ),
+    (
+        "staged_dropper",
+        # Shape: fetcher writes to disk (-o/-O/--output...), the script then
+        # chains (&& ; || &) into chmod +x / a numeric chmod mode, a path
+        # run in command position, or a shell interpreting a written path.
+        # Piped forms (curl -qO- ... | sh) stay download_exec's job.
+        re.compile(
+            r"\b(?:curl|wget)\b"
+            r"(?=[^;&|\n]*\s(?:-[a-z]*o(?![-=])|--output-document[=\s]|--output[=\s]))"
+            r".*?(?:"
+            r"(?:&&|\|\||;|&)\s*(?:sudo\s+)?chmod\s+(?:\+[a-z]+(?:\s*,\s*[a-z]+)*|[0-7]{3,4})"
+            r"|(?:&&|\|\||;|&)\s*(?:sudo\s+)?(?:"
+            r"/[\w.@%+-]+(?:/[\w.@%+-]+)*"
+            r"|\.{1,2}/[\w@%+=:,.\-]+"
+            r"|(?:ba|z|da|k)?sh\s+/(?:[\w.@%+-]+/)*[\w.@%+-]+"
+            r"|(?:ba|z|da|k)?sh\s+\.{1,2}/[\w@%+=:,.\-]+"
+            r"))",
+            re.IGNORECASE,
+        ),
+        "Staged dropper: fetch to disk, then chmod/execute.",
     ),
 ]
 

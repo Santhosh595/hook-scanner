@@ -84,6 +84,23 @@ class TestNpmScripts:
         findings = scan_npm(repo_root)
         assert findings and all(f.severity == "low" for f in findings)
 
+    def test_staged_dropper_flagged(self, repo_root):
+        install(repo_root, "package.json", "package_dropper.json")
+        findings = scan_npm(repo_root)
+        rules = {f.rule for f in findings}
+        assert rules == {"npm_postinstall_dangerous"}
+        f = next(f for f in findings if f.rule == "npm_postinstall_dangerous")
+        assert f.severity == "high"
+        assert "'staged_dropper'" in f.message
+
+    def test_staged_dropper_clean_variant_stays_low(self, repo_root):
+        install(repo_root, "package.json", "package_dropper_clean.json")
+        findings = scan_npm(repo_root)
+        # fetch-to-disk without chmod/exec: present-but-benign only
+        assert findings
+        assert all(f.severity == "low" for f in findings)
+        assert all(f.rule.endswith("_present") for f in findings)
+
 
 class TestGithubActions:
     def test_pr_target_flagged(self, repo_root):
