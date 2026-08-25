@@ -66,13 +66,29 @@ _PATTERNS: list[tuple[str, re.Pattern[str], str]] = [
         # chains (&& ; || &) into chmod +x / a numeric chmod mode, a path
         # run in command position, or a shell interpreting a written path.
         # Piped forms (curl -qO- ... | sh) stay download_exec's job.
+        #
+        # FP discipline (QA review, PR #3): the two branches below used to
+        # fire on *any* chained numeric chmod and *any* absolute path run
+        # after a fetch. That flagged routine automation like
+        #   curl -o app.css https://cdn/app.css && chmod 644 app.css
+        #   curl -o data.csv https://api/data.csv && /usr/bin/python3 import.py
+        # So: numeric modes only match when an execute bit is set (an odd
+        # octal digit — perms fixes on fetched data files don't need one),
+        # and absolute-path exec only matches the locations staged droppers
+        # actually use: writable staging dirs (/tmp, /var/tmp, /dev/shm),
+        # home trees, or a hidden file anywhere. Running a system tool by
+        # absolute path is ordinary CI/setup work, not a dropper tell.
         re.compile(
             r"\b(?:curl|wget)\b"
             r"(?=[^;&|\n]*\s(?:-[a-z]*o(?![-=])|--output-document[=\s]|--output[=\s]))"
             r".*?(?:"
-            r"(?:&&|\|\||;|&)\s*(?:sudo\s+)?chmod\s+(?:\+[a-z]+(?:\s*,\s*[a-z]+)*|[0-7]{3,4})"
+            r"(?:&&|\|\||;|&)\s*(?:sudo\s+)?chmod\s+(?:\+[a-z]+(?:\s*,\s*[a-z]+)*"
+            r"|(?=[0-7]{3,4})[0-7]*[1357][0-7]*)"
             r"|(?:&&|\|\||;|&)\s*(?:sudo\s+)?(?:"
-            r"/[\w.@%+-]+(?:/[\w.@%+-]+)*"
+            r"/(?:var/)?tmp/(?:[\w.@%+-]+/)*[\w.@%+-]+"
+            r"|/dev/shm/(?:[\w.@%+-]+/)*[\w.@%+-]+"
+            r"|/(?:home/[\w.@%+-]+|root)/(?:[\w.@%+-]+/)*[\w.@%+-]+"
+            r"|/(?:[\w.@%+-]+/)*\.[\w.@%+-]+"
             r"|\.{1,2}/[\w@%+=:,.\-]+"
             r"|(?:ba|z|da|k)?sh\s+/(?:[\w.@%+-]+/)*[\w.@%+-]+"
             r"|(?:ba|z|da|k)?sh\s+\.{1,2}/[\w@%+=:,.\-]+"

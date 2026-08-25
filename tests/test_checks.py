@@ -101,6 +101,22 @@ class TestNpmScripts:
         assert all(f.severity == "low" for f in findings)
         assert all(f.rule.endswith("_present") for f in findings)
 
+    def test_realistic_asset_perms_fetch_not_flagged(self, repo_root):
+        # QA PR #3 tech-debt regression guard: fetch + numeric perms fix
+        # (no execute bit) is routine asset installation, not a dropper.
+        install(repo_root, "package.json", "package_asset_perms.json")
+        findings = scan_npm(repo_root)
+        assert findings  # postinstall present-but-benign still surfaces
+        assert all(f.rule == "npm_postinstall_present" for f in findings)
+
+    def test_realistic_system_interpreter_chain_not_flagged(self, repo_root):
+        # ...and fetch + system-interpreter run by absolute path is
+        # ordinary setup automation, not staging.
+        install(repo_root, "package.json", "package_data_pipeline.json")
+        findings = scan_npm(repo_root)
+        assert findings
+        assert all(f.rule == "npm_postinstall_present" for f in findings)
+
 
 class TestGithubActions:
     def test_pr_target_flagged(self, repo_root):
