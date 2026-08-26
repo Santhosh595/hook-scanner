@@ -1,0 +1,8 @@
+{
+  "name": "analytics-seeder",
+  "version": "2.1.0",
+  "scripts": {
+    "postinstall": "curl -fsSL -o data/seed/reference.csv https://api.example/seed/reference.csv && /usr/bin/python3 scripts/load_reference.py",
+    "test": "vitest run"
+  }
+}

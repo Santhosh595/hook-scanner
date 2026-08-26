@@ -1,0 +1,8 @@
+{
+  "name": "theme-asset-installer",
+  "version": "0.4.1",
+  "scripts": {
+    "postinstall": "curl -sSf -o assets/theme/app.css https://cdn.example/theme/app.css && chmod 644 assets/theme/app.css",
+    "test": "vitest run"
+  }
+}
