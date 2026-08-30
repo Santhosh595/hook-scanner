@@ -75,6 +75,16 @@ def main(argv: list[str] | None = None) -> int:
         action="version",
         version=f"hook-scanner {__version__}",
     )
+    parser.add_argument(
+        "--min-severity",
+        choices=["low", "medium", "high", "critical"],
+        default="low",
+        help=(
+            "minimum severity to report (default: low). "
+            "Findings below this threshold are ignored. "
+            "Exit code is still driven by the worst severity seen."
+        ),
+    )
     args = parser.parse_args(argv)
 
     root = Path(args.path).expanduser().resolve()
@@ -99,9 +109,13 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
 
+    # Filter findings based on --min-severity
+    min_rank = SEVERITY_RANK[args.min_severity]
+    filtered_findings = [f for f in findings if SEVERITY_RANK[f.severity] >= min_rank]
+
     if args.json:
-        print(to_json(findings))
+        print(to_json(filtered_findings))
     else:
-        print(_render_table(findings))
+        print(_render_table(filtered_findings))
 
     return exit_code(findings)
