@@ -37,6 +37,9 @@ hook-scanner .
 # machine-readable for CI / tooling
 hook-scanner --json .
 
+# minimum severity filter to ignore lower-severity findings
+hook-scanner --min-severity medium .
+
 # exit codes:
 #   0  clean, or only low/info findings (non-blocking noise)
 #   2-5  worst finding severity (2 medium, 3 high, 4 critical, 5 check error)
