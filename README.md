@@ -45,6 +45,13 @@ hook-scanner --min-severity medium .
 #   2-5  worst finding severity (2 medium, 3 high, 4 critical, 5 check error)
 ```
 
+### Options
+
+| Flag | Description | Values | Default |
+|---|---|---|---|
+| `--json` | Output results as JSON | - | `false` |
+| `--min-severity` | Filter findings below this severity | `info`, `low`, `medium`, `high`, `critical` | `info` |
+
 ### What it checks
 
 | Family | Files | Flags |
