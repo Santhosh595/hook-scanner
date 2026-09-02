@@ -58,6 +58,12 @@ def main(argv: list[str] | None = None) -> int:
             "npm install scripts, GitHub Actions workflows, agent "
             "instruction files."
         ),
+        epilog=(
+            "Examples:\n"
+            "  hook-scanner --min-severity high .         # Only show high/critical findings\n"
+            "  hook-scanner --min-severity medium .       # Only show medium/high/critical findings"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "path",
