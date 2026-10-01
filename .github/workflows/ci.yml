@@ -1,0 +1,29 @@
+# CI: run the test suite on every push to main and every PR targeting it.
+# The repo itself is stdlib-only at runtime; pytest here is the test runner,
+# not a project dependency. Actions are pinned by full SHA (the same practice
+# this tool recommends for third-party actions).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.11"
+
+      - name: Install test runner
+        run: python -m pip install --upgrade pip && python -m pip install pytest
+
+      - name: Run test suite
+        run: python -m pytest tests/ -q
