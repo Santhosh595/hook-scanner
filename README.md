@@ -1,5 +1,9 @@
 # hook-scanner
 
+[![CI](https://github.com/Santhosh595/hook-scanner/actions/workflows/ci.yml/badge.svg)](https://github.com/Santhosh595/hook-scanner/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 Static, **read-only** audit of AI-codetool **supply-chain risk** in a repo or
 workspace. It scans the files an AI coding agent *trusts* — Claude Code hooks,
 VS Code tasks/extensions, npm install scripts, GitHub Actions workflows, and
@@ -37,10 +41,24 @@ hook-scanner .
 # machine-readable for CI / tooling
 hook-scanner --json .
 
+# report only medium and above
+hook-scanner --min-severity medium .
+
 # exit codes:
 #   0  clean, or only low/info findings (non-blocking noise)
 #   2-5  worst finding severity (2 medium, 3 high, 4 critical, 5 check error)
 ```
+
+### Options
+
+| Flag | Description | Values | Default |
+|---|---|---|---|
+| `--json` | Output results as JSON | - | `false` |
+| `--min-severity` | Report only findings at this severity or above | `low`, `medium`, `high`, `critical` | `low` |
+
+`--min-severity` filters what is **reported**. The exit code is still the
+worst severity found in the run, so raising the threshold does not turn a
+genuinely dangerous install script into a green pipeline.
 
 ### What it checks
 
